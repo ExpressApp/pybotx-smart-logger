@@ -1,0 +1,9 @@
+"""Log levels used in loguru."""
+
+TRACE = "TRACE"
+DEBUG = "DEBUG"
+INFO = "INFO"
+SUCCESS = "SUCCESS"
+WARNING = "WARNING"
+ERROR = "ERROR"
+CRITICAL = "CRITICAL"

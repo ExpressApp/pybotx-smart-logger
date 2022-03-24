@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "pybotx-smart-logger"
+version = "0.6.1"
+description = "Shows logs when you need it"
+authors = ["Alexander Samoylenko <alexandr.samojlenko@ccsteam.ru>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8, <3.10"
+
+pybotx = "~0.32.0"
+
+fastapi = "~0.70.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
