@@ -37,7 +37,7 @@ def log_incoming_message(
     raw_command: Dict[str, Any], title: str, log_level: str
 ) -> None:
     if raw_command is None:
-        logger.warning(log_level, "{}\n{}", title, "Empty `raw_command`")
+        logger.warning("Empty `raw_command`")
         return
         
     trimmed_raw_command = trim_file_data_in_incoming_json(raw_command)
