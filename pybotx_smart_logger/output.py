@@ -36,6 +36,10 @@ def attach_log_source(log_message: str) -> str:
 def log_incoming_message(
     raw_command: Dict[str, Any], title: str, log_level: str
 ) -> None:
+    if raw_command is None:
+        logger.log(log_level, "{}\n{}", title, "There is no raw command")
+        return
+        
     trimmed_raw_command = trim_file_data_in_incoming_json(raw_command)
     logger.log(log_level, "{}\n{}", title, pformat(trimmed_raw_command))
 
