@@ -147,7 +147,7 @@ python-versions = "*"
 
 [[package]]
 name = "pybotx"
-version = "0.32.2"
+version = "0.34.0"
 description = "A python library for interacting with eXpress BotX API"
 category = "main"
 optional = false
@@ -234,7 +234,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8, <3.10"
-content-hash = "0103f48d5ce04fc7cb037f6f282e1d3ac6376ca5556ff3e764d9002e033968c3"
+content-hash = "c89acfdfdc6da5748c4c898edd6ff63558bbf5dabc1a16a030b65214612dba52"
 
 [metadata.files]
 aiofiles = [
@@ -286,8 +286,8 @@ mypy-extensions = [
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
 ]
 pybotx = [
-    {file = "pybotx-0.32.2-py3-none-any.whl", hash = "sha256:4d7e5638cf97f8d1663979311ba5051fbaf9f4970c23818bcaebdaeadf593da5"},
-    {file = "pybotx-0.32.2.tar.gz", hash = "sha256:8efacde76e706f8ea80b20233df7c91079c81e776a33f13b823325738c587f24"},
+    {file = "pybotx-0.34.0-py3-none-any.whl", hash = "sha256:fbcd8812a3311190017ad3eee63356d72ed8e523b2845227c5ed6952b1924d55"},
+    {file = "pybotx-0.34.0.tar.gz", hash = "sha256:3a1a45c27fa168d4fd58af32d9458e6936dffc80dc3291688e134ac630fe88f6"},
 ]
 pydantic = [
     {file = "pydantic-1.8.2-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:05ddfd37c1720c392f4e0d43c484217b7521558302e7069ce8d318438d297739"},
