@@ -6,7 +6,7 @@ _Shows logs when you need it_
 ## Проблема/решение
 
 В основном наши боты работают в закрытых контурах. Там невозможно использовать Sentry,
-поэтому наш главный помощник в диагностике неполадок -- логи контейнера.
+поэтому наш главный помощник в диагностике неполадок - логи контейнера.
 
 Однако, если сделать логи слишком подробными, то действительно важную информацию будет
 очень сложно найти. Также мы получим проблемы избыточного использования постоянной
@@ -14,7 +14,7 @@ _Shows logs when you need it_
 столкнуться с ситуацией, когда их недостаточно для диагностики ошибки.
 
 То есть хочется видеть как можно больше информации во время возникновения ошибок, и как
-можно меньше -- когда всё хорошо.
+можно меньше - когда всё хорошо.
 
 
 ## Использование
@@ -70,41 +70,33 @@ _Shows logs when you need it_
 
 ## Настройка
 
-1. Добавляем библиотеку в зависимости `poetry` и устанавливаем:
-
-```toml
-pybotx-smart-logger = { git = "https://gitlab.ccsteam.ru/rnd/pybotx-smart-logger", rev = "0.6.0" }
-```
-
+1. Устанавливаем библиотеку:  
 ```bash
-$ poetry lock && poetry install
+poetry add pybotx-smart-logger
 ```
 
-2. Создаём хендлер исключений и подлючаем его к боту. Хендлер должен быть подключен к
+2. Подключаем мидлварь и хендлер исключений к боту. Хендлер должен быть подключен к
    типу Exception, т.е. заменяет подключенный в коробке `internal_error_handler`.
 
 ```python
+from pybotx import Bot
+from pybotx_smart_logger import make_smart_logger_exception_handler, BotXSmartLoggerMiddleware
+
 from app.resources import strings
-from pybotx_smart_logger import make_smart_logger_exception_handler
 
 smart_logger_exception_handler = make_smart_logger_exception_handler(
     strings.BOT_INTERNAL_ERROR_TEXT
 )
 
-bot.add_exception_handler(Exception, smart_logger_exception_handler)
-```
-
-3. Подключаем миддлварь:
-
-```python
-from pybotx_smart_logger import BotXSmartLoggerMiddleware
-
-bot.add_middleware(
-    BotXSmartLoggerMiddleware, debug_enabled_for_message=lambda message: False
+bot = Bot(
+    collectors=...,
+    bot_accounts=...,
+    exception_handlers={Exception: smart_logger_exception_handler},
+    middlewares=[BotXSmartLoggerMiddleware, debug_enabled_for_message=False]
 )
 ```
 
-4. [Опционально] Для фоновых задач создаём декоратор и запускаем фоновые задачи в при
+3. [Опционально] Для фоновых задач создаём декоратор и запускаем фоновые задачи в при
    старте бота:
 
 ```python
@@ -128,9 +120,9 @@ async def update_background_task() -> None:
 asyncio.create_task(update_background_task())
 ```
 
-5. [Опционально] Возможность логирования из FastAPI хендлера:
+4. [Опционально] Возможность логирования из FastAPI хендлера:
 В файле `app/main.py`
-5.1 Подлключаем миддлварь:
+4.1 Подлключаем миддлварь:
 ``` python
 from pybotx_smart_logger import FastApiSmartLoggerMiddleware
 ...
@@ -138,7 +130,7 @@ def get_application() -> FastAPI:
     ...
     application.middleware("http")(FastApiSmartLoggerMiddleware(debug_enabled=False))
 ```
-5.2 Подключаем хендлер исключений:
+4.2 Подключаем хендлер исключений:
 ``` python
 from pybotx_smart_logger import FastApiSmartLoggerMiddleware, fastapi_exception_handler
 ...
@@ -151,26 +143,26 @@ def get_application() -> FastAPI:
 ## Пример команд для включения отладки
 
 ```python
-@collector.hidden(command="/_debug:enable-for-huids")
-async def enable_debug_for_users(message: Message, bot: Bot) -> None:
+@collector.command("/_debug:enable-for-huids", visible=False)
+async def enable_debug_for_users(message: IncomingMessage, bot: Bot) -> None:
     try:
-        huids = [UUID(huid) for huid in message.command.arguments]
+        huids = [UUID(huid) for huid in message.arguments]
     except ValueError:
-        await bot.answer_message("Получен невалидный user_huid", message)
+        await bot.answer_message("Получен невалидный user_huid")
         return
 
     # TODO: Обновите список user_huid
 
-    await bot.answer_message("Список user_huid для отладки обновлён", message)
+    await bot.answer_message("Список user_huid для отладки обновлён")
 ```
 
 
 ```python
-@collector.hidden(command="/_debug:enable-for-tasks")
-async def enable_debug_for_tasks(message: Message, bot: Bot) -> None:
+@collector.command("/_debug:enable-for-tasks", visible=False)
+async def enable_debug_for_tasks(message: IncomingMessage, bot: Bot) -> None:
     # TODO: Обновите список имён задач
 
-    await bot.answer_message("Список задач для отладки обновлён", message)
+    await bot.answer_message("Список задач для отладки обновлён")
 ```
 
 
@@ -181,17 +173,21 @@ async def enable_debug_for_tasks(message: Message, bot: Bot) -> None:
 ```python
 from pybotx_smart_logger import smart_log
 
-async def subscribed_users_only(
-    message: Message,
+# TODO: Мидлварь для заполнения message.state.user
+
+async def subscribed_users_only_middleware(
+    message: IncomingMessage,
     bot: Bot,
-    user: User = user_dependency,
+    call_next: IncomingMessageHandlerFunc,
 ) -> None:
-    if not user.is_subscribed:
+    if not message.state.user.is_subscribed:
         await bot.send(only_subscribed_users_allowed_message(message))
 
-        raise DependencyFailure
+        return
 
     smart_log("This user is subscribed")
+
+    await call_next(message, bot)
 ```
 
 2. Обращение в API:
@@ -230,4 +226,4 @@ async def _perform_request(
     return response.text
 ```
 
-А также любые моменты, где что-то может пойти не так. Логируйте -- не стестяйтесь.
+А также любые моменты, где что-то может пойти не так. Логируйте - не стестяйтесь.
