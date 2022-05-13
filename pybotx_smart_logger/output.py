@@ -1,7 +1,7 @@
 """Helpers for printing log messages."""
 
 from pprint import pformat
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pybotx.logger import trim_file_data_in_incoming_json
 from loguru import logger
@@ -44,7 +44,7 @@ def log_incoming_message(
     logger.log(log_level, "{}\n{}", title, pformat(trimmed_raw_command))
 
 
-def log_system_event(raw_command: Dict[str, Any], title: str, log_level: str) -> None:
+def log_system_event(raw_command: Optional[Dict[str, Any]], title: str, log_level: str) -> None:
     if raw_command is None:
         logger.warning("Empty `raw_command`")
         return
