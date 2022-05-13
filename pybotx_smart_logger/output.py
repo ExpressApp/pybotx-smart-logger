@@ -45,6 +45,10 @@ def log_incoming_message(
 
 
 def log_system_event(raw_command: Dict[str, Any], title: str, log_level: str) -> None:
+    if raw_command is None:
+        logger.warning("Empty `raw_command`")
+        return
+
     logger.log(log_level, "{}\n{}", title, pformat(raw_command))
 
 
