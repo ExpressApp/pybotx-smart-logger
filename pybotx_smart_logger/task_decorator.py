@@ -16,7 +16,7 @@ from pybotx_smart_logger.schemas import LogSource
 
 
 def make_smart_logger_decorator(
-    debug_enabled_for_task: Callable[[str], bool]
+    debug_enabled_for_task: Callable[[str], bool],
 ) -> Callable:
     def decorator(func):  # type: ignore
         @wraps(func)

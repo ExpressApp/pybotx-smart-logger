@@ -5,12 +5,12 @@ Prints all accumulated logs and sends default error message.
 
 from typing import Awaitable, Callable
 
+from fastapi import Request
+from loguru import logger
 from pybotx import Bot, IncomingMessage
 from pybotx_smartapp_rpc.models.errors import RPCError
 from pybotx_smartapp_rpc.models.responses import RPCErrorResponse
 from pybotx_smartapp_rpc.smartapp import SmartApp
-from fastapi import Request
-from loguru import logger
 from starlette.responses import Response
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -19,17 +19,19 @@ from pybotx_smart_logger.contextvars import get_debug_enabled
 from pybotx_smart_logger.logger import flush_accumulated_logs
 from pybotx_smart_logger.output import (
     attach_log_source,
-    log_system_event,
     log_incoming_http_request,
     log_incoming_message,
+    log_system_event,
 )
 
 
 def make_smart_logger_exception_handler(
     error_text: str,
-) -> Callable[[Exception, IncomingMessage], Awaitable[None]]:
+) -> Callable[[IncomingMessage, Bot, Exception], Awaitable[None]]:
     async def exception_handler(
-        message: IncomingMessage, bot: Bot, exc: Exception
+        message: IncomingMessage,
+        bot: Bot,
+        exc: Exception,
     ) -> None:
         if not get_debug_enabled():
             log_incoming_message(
@@ -62,8 +64,11 @@ async def smartapp_exception_handler(
     smartapp: SmartApp,
 ) -> RPCErrorResponse:
     if not get_debug_enabled():
+        raw_command = None
+        if smartapp.event is not None:
+            raw_command = smartapp.event.raw_command
         log_system_event(
-            smartapp.event.raw_command,
+            raw_command,
             "Error while processing incoming SmartApp event:",
             log_levels.ERROR,
         )

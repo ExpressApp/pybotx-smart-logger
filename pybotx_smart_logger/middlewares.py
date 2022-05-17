@@ -2,8 +2,8 @@
 
 from typing import Awaitable, Callable, Union
 
-from pybotx import Bot, IncomingMessage, IncomingMessageHandlerFunc
 from fastapi import Request
+from pybotx import Bot, IncomingMessage, IncomingMessageHandlerFunc
 
 from pybotx_smart_logger import log_levels
 from pybotx_smart_logger.contextvars import (
@@ -20,13 +20,17 @@ class BotXSmartLoggerMiddleware:
     def __init__(
         self,
         debug_enabled_for_message: Union[
-            Callable[[IncomingMessage], Awaitable[bool]], bool
+            Callable[[IncomingMessage], Awaitable[bool]],
+            bool,
         ],
     ) -> None:
         self._debug_enabled_for_message = debug_enabled_for_message
 
     async def dispatch(
-        self, message: IncomingMessage, bot: Bot, call_next: IncomingMessageHandlerFunc
+        self,
+        message: IncomingMessage,
+        bot: Bot,
+        call_next: IncomingMessageHandlerFunc,
     ) -> None:
         set_log_source(LogSource.from_user_message(message.sender.huid))
 

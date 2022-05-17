@@ -3,8 +3,8 @@
 from pprint import pformat
 from typing import Any, Dict, Optional
 
-from pybotx.logger import trim_file_data_in_incoming_json
 from loguru import logger
+from pybotx.logger import trim_file_data_in_incoming_json
 
 from pybotx_smart_logger.contextvars import get_http_request_headers, get_log_source
 from pybotx_smart_logger.schemas import LogSourceType
@@ -34,17 +34,23 @@ def attach_log_source(log_message: str) -> str:
 
 
 def log_incoming_message(
-    raw_command: Dict[str, Any], title: str, log_level: str
+    raw_command: Optional[Dict[str, Any]],
+    title: str,
+    log_level: str,
 ) -> None:
     if raw_command is None:
         logger.warning("Empty `raw_command`")
         return
-        
+
     trimmed_raw_command = trim_file_data_in_incoming_json(raw_command)
     logger.log(log_level, "{}\n{}", title, pformat(trimmed_raw_command))
 
 
-def log_system_event(raw_command: Optional[Dict[str, Any]], title: str, log_level: str) -> None:
+def log_system_event(
+    raw_command: Optional[Dict[str, Any]],
+    title: str,
+    log_level: str,
+) -> None:
     if raw_command is None:
         logger.warning("Empty `raw_command`")
         return
@@ -63,7 +69,9 @@ def log_incoming_http_request(
     headers = get_http_request_headers()
     assert headers is not None
 
-    formatted_headers = "\n".join([f"{key}: {value}" for key, value in headers.items()])
+    formatted_headers = "\n".join(
+        [f"{key}: {value}" for key, value in headers.items()],
+    )
     logger.log(
         log_level,
         "HTTP {} {}\nHeaders:\n{}",
