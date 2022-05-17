@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -ex
+
+black --check --diff pybotx_smart_logger tests
+isort --profile black --check-only pybotx_smart_logger tests
+
+mypy pybotx_smart_logger tests
+flake8 pybotx_smart_logger tests
