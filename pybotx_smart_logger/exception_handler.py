@@ -8,9 +8,6 @@ from typing import Awaitable, Callable
 from fastapi import Request
 from loguru import logger
 from pybotx import Bot, IncomingMessage
-from pybotx_smartapp_rpc.models.errors import RPCError
-from pybotx_smartapp_rpc.models.responses import RPCErrorResponse
-from pybotx_smartapp_rpc.smartapp import SmartApp
 from starlette.responses import Response
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
 
@@ -21,7 +18,6 @@ from pybotx_smart_logger.output import (
     attach_log_source,
     log_incoming_http_request,
     log_incoming_message,
-    log_system_event,
 )
 
 
@@ -57,25 +53,3 @@ async def fastapi_exception_handler(request: Request, exc: Exception) -> Respons
         )
 
     return Response(status_code=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-async def smartapp_exception_handler(
-    exc: Exception,
-    smartapp: SmartApp,
-) -> RPCErrorResponse:
-    if not get_debug_enabled():
-        raw_command = None
-        if smartapp.event is not None:
-            raw_command = smartapp.event.raw_command
-        log_system_event(
-            raw_command,
-            "Error while processing incoming SmartApp event:",
-            log_levels.ERROR,
-        )
-        flush_accumulated_logs(log_levels.ERROR)
-
-    logger.exception(attach_log_source(""))
-
-    return RPCErrorResponse(
-        errors=[RPCError(reason="Internal error", id=exc.__class__.__name__.upper())],
-    )
