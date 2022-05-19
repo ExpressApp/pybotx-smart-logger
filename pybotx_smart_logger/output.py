@@ -15,7 +15,7 @@ MAX_FILE_CONTENT_LENGTH = 32
 def attach_log_source(log_message: str) -> str:
     raw_log_source = get_log_source()
 
-    if raw_log_source is None:
+    if raw_log_source is None:  # pragma: no cover
         log_source = "<missing log source>"
     elif raw_log_source.source_type == LogSourceType.USER_MESSAGE.value:
         log_source = f"user '{raw_log_source.source_context}'"
@@ -28,7 +28,9 @@ def attach_log_source(log_message: str) -> str:
         bot_id, event = raw_log_source.source_context
         log_source = f"event {event} to bot '{bot_id}'"
     else:
-        log_source = "<UNKNOWN LOG SOURCE>"
+        raise NotImplementedError(
+            f"Unsupported log source: `{raw_log_source}`",
+        )  # pragma: no cover
 
     return f"[{log_source}] {log_message}"
 
@@ -74,7 +76,8 @@ def log_incoming_http_request(
     )
     logger.log(
         log_level,
-        "HTTP {} {}\nHeaders:\n{}",
+        "{}:\nHTTP {} {}\nHeaders:\n{}",
+        title,
         method,
         url,
         formatted_headers,

@@ -3,7 +3,7 @@
 
 class Undefined:
     def __new__(cls) -> "Undefined":
-        if not hasattr(cls, "instance"):  # noqa: WPS421
+        if not hasattr(cls, "instance"):  # pragma: no cover
             cls.instance = super().__new__(cls)
 
         return cls.instance
