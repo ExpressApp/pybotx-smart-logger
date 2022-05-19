@@ -6,7 +6,8 @@ from typing import Dict, Optional
 from pybotx_smart_logger.schemas import AccumulatedLogs, LogSource
 
 _accumulated_logs_var: ContextVar[Optional[AccumulatedLogs]] = ContextVar(
-    "accumulated_logs", default=None
+    "accumulated_logs",
+    default=None,
 )
 
 
@@ -40,7 +41,8 @@ def set_debug_enabled(new_value: bool) -> None:
 
 
 _log_source_var: ContextVar[Optional[LogSource]] = ContextVar(
-    "log_source_var", default=None
+    "log_source_var",
+    default=None,
 )
 
 
@@ -54,7 +56,8 @@ def set_log_source(log_source: LogSource) -> None:
 
 Headers = Dict[str, str]
 _http_request_headers: ContextVar[Optional[Headers]] = ContextVar(
-    "http_request_headers", default=None
+    "http_request_headers",
+    default=None,
 )
 
 

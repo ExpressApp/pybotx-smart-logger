@@ -24,8 +24,8 @@ def flush_log_entry(log_entry: LogEntry, log_level: str) -> None:
                 "name": log_entry.module,
                 "line": log_entry.line_number,
                 "function": log_entry.function,
-            }
-        )
+            },
+        ),
     )
 
     formatted_log_message = attach_log_source(log_entry.log_message)
@@ -34,7 +34,10 @@ def flush_log_entry(log_entry: LogEntry, log_level: str) -> None:
         patched_logger.log(log_level, formatted_log_message)
     else:
         patched_logger.log(
-            log_level, "{}\n{}", formatted_log_message, pformat(log_entry.log_item)
+            log_level,
+            "{}\n{}",
+            formatted_log_message,
+            pformat(log_entry.log_item),
         )
 
 
