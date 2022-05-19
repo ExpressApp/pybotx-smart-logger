@@ -52,4 +52,6 @@ async def fastapi_exception_handler(request: Request, exc: Exception) -> Respons
             log_levels.ERROR,
         )
 
+    logger.exception(attach_log_source(""))
+
     return Response(status_code=HTTP_500_INTERNAL_SERVER_ERROR)
