@@ -39,7 +39,7 @@ def make_smart_logger_exception_handler(
 
         logger.exception(attach_log_source(""))
 
-        await bot.answer_message(error_text)
+        await bot.answer_message(error_text, wait_callback=False)
 
     return exception_handler
 
