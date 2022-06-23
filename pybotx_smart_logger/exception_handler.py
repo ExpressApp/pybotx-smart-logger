@@ -4,6 +4,7 @@ Prints all accumulated logs and sends default error message.
 """
 
 from typing import Awaitable, Callable
+from uuid import uuid4
 
 from fastapi import Request
 from loguru import logger
@@ -29,6 +30,10 @@ def make_smart_logger_exception_handler(
         bot: Bot,
         exc: Exception,
     ) -> None:
+        error_id_message = f"Error id: {uuid4()}"
+
+        logger.exception(error_id_message)
+
         if not get_debug_enabled():
             log_incoming_message(
                 message.raw_command,
@@ -39,7 +44,10 @@ def make_smart_logger_exception_handler(
 
         logger.exception(attach_log_source(""))
 
-        await bot.answer_message(error_text, wait_callback=False)
+        await bot.answer_message(
+            "\n\n".join([error_text, error_id_message]),
+            wait_callback=False,
+        )
 
     return exception_handler
 
