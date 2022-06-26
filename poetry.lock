@@ -618,19 +618,6 @@ pydantic = ">=1.6.0,<1.10.0"
 typing-extensions = ">=3.7.4,<5.0.0"
 
 [[package]]
-name = "pybotx-smartapp-rpc"
-version = "0.5.0"
-description = "eXpress SmartApp JSON-RPC library"
-category = "main"
-optional = false
-python-versions = ">=3.8,<3.11"
-
-[package.dependencies]
-fastapi = ">=0.70.0,<0.75.0"
-pybotx = ">=0.32.0,<0.45.0"
-pydantic = ">=1.8.2,<2.0.0"
-
-[[package]]
 name = "pycodestyle"
 version = "2.8.0"
 description = "Python style guide checker"
@@ -945,7 +932,7 @@ dev = ["pytest (>=4.6.2)", "black (>=19.3b0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8, <3.11"
-content-hash = "92efb322c668cd5eaf615aeda00c1455b7b9343108810779732ccf1ddea74cb6"
+content-hash = "20811e918a4f6adea331217ce168651cfcef26a111db9bc3b8f194fbe140b8f6"
 
 [metadata.files]
 add-trailing-comma = [
@@ -1233,10 +1220,6 @@ py = [
 pybotx = [
     {file = "pybotx-0.44.0-py3-none-any.whl", hash = "sha256:3d41b9e447ced4214fe5b8d501b67727ac31bd69e710520fc120039e18219e0e"},
     {file = "pybotx-0.44.0.tar.gz", hash = "sha256:b9165028962c81f56eecdfa5a37a737a3b4f23fe3b2f17ab527a831eb0a961ca"},
-]
-pybotx-smartapp-rpc = [
-    {file = "pybotx-smartapp-rpc-0.5.0.tar.gz", hash = "sha256:e7b2d8aec84c7190d9729ddbc97ceddd7c95ac7d5e6859f500084bbb672a5b43"},
-    {file = "pybotx_smartapp_rpc-0.5.0-py3-none-any.whl", hash = "sha256:16a55e523a692fd1f415320fed3509ac61135d8060f81a015f29fc04a67be50d"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.8.0-py2.py3-none-any.whl", hash = "sha256:720f8b39dde8b293825e7ff02c475f3077124006db4f440dcbc9a20b76548a20"},
