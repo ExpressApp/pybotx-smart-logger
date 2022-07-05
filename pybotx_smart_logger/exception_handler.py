@@ -47,6 +47,7 @@ def make_smart_logger_exception_handler(
         await bot.answer_message(
             "\n\n".join([error_text, error_id_message]),
             wait_callback=False,
+            recipients=[message.sender.huid],
         )
 
     return exception_handler
