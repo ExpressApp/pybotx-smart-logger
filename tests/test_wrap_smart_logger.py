@@ -156,7 +156,7 @@ async def test__wrap_smart_logger__debug_off__error_occured(
         middlewares=[wrap_smart_logger_middleware],
     )
     async def hello_handler(message: IncomingMessage, _: Bot) -> None:
-        smart_log("Hello from handler", log_item="Log Item")
+        smart_log("Hello from handler")
         raise ValueError("Test Error")
 
     built_bot = Bot(

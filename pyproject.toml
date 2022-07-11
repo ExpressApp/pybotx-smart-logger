@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybotx-smart-logger"
-version = "0.8.0"
+version = "0.9.0"
 description = "Shows logs when you need it"
 authors = ["Alexander Samoylenko <alexandr.samojlenko@ccsteam.ru>"]
 readme = "README.md"
