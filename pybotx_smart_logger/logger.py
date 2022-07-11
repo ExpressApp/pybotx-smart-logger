@@ -12,7 +12,6 @@ from pybotx_smart_logger.contextvars import (
     get_accumulated_logs,
     get_debug_enabled,
 )
-from pybotx_smart_logger.output import attach_log_source
 from pybotx_smart_logger.schemas import LogEntry
 from pybotx_smart_logger.undefined import Undefined, undefined
 
@@ -28,15 +27,13 @@ def flush_log_entry(log_entry: LogEntry, log_level: str) -> None:
         ),
     )
 
-    formatted_log_message = attach_log_source(log_entry.log_message)
-
     if isinstance(log_entry.log_item, Undefined):
-        patched_logger.log(log_level, formatted_log_message)
+        patched_logger.log(log_level, log_entry.log_message)
     else:
         patched_logger.log(
             log_level,
             "{}\n{}",
-            formatted_log_message,
+            log_entry.log_message,
             pformat(log_entry.log_item),
         )
 
