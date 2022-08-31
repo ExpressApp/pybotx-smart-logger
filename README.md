@@ -70,11 +70,25 @@ def get_bot(callback_repo: CallbackRepoProto, raise_exceptions: bool) -> Bot:
 3. Для того чтобы логировать какие-то другие части приложения, необходимо обернуть в контекстный менджер:
 ```python
 async with wrap_smart_logger(
-        log_source="Request to Server",
-        context_func=lambda: str(kwargs),
-        debug=False),
+    log_source="Request to Server",
+    context_func=lambda: str(kwargs),
+    debug=False
 ):
     response = await make_request(**kwargs)
+```
+
+4.  Также можно использовать smart_logger для логирования запросов к FastAPI приложению:
+```python
+app = FastAPI()
+
+@app.middleware("http")
+async def smart_logger_middleware(request: Request, call_next: Callable) -> None:
+    async with wrap_smart_logger(
+        log_source="Incoming request",
+        context_func=lambda: pformat_str_request(request),
+        debug=DEBUG,
+    ):
+        return await call_next(request)
 ```
 `log_source` определяет источник логов. `context_func` - пользовательская функция для форматирования логов.
 
