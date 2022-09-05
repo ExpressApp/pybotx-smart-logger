@@ -36,3 +36,4 @@ jobs:
       - name: Run lint
         run: |
           poetry run ./scripts/lint
+          poetry run ./scripts/docs-lint

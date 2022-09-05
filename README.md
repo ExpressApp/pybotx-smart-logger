@@ -37,49 +37,47 @@ poetry add pybotx-smart-logger
 ```
 
 2. Подключим мидлварь для логирования входящих сообщений:
-```python
-# middlewares/smart_logger.py
 
+**middlewares/smart_logger.py**
+```python #logger_init_middleware
 async def smart_logger_middleware(
-    message: IncomingMessage, bot: Bot, call_next: IncomingMessageHandlerFunc
+    message: IncomingMessage,
+    bot: Bot,
+    call_next: IncomingMessageHandlerFunc,
 ) -> None:
     async with wrap_smart_logger(
         log_source="Incoming message",
         context_func=lambda: format_raw_command(message.raw_command),
-        debug=is_enabled_debug(message),
+        debug=True,
     ):
         await call_next(message, bot)
+```
 
-        
-# bot.py
-from pybotx import Bot, CallbackRepoProto
-
-from app.bot.middlewares.smart_logger import smart_logger_middleware
-
-
-def get_bot(callback_repo: CallbackRepoProto, raise_exceptions: bool) -> Bot:
-    ...
-    return Bot(
-        ...
-        middlewares=[
-            smart_logger_middleware,
-        ]
-    )
-
+**bot.py**
+```python #logger_init_bot
+Bot(
+    collectors=[collector],
+    bot_accounts=[BOT_CREDENTIALS],
+    middlewares=[
+        smart_logger_middleware,
+    ],
+)
 ```
 3. Для того чтобы логировать какие-то другие части приложения, необходимо обернуть в контекстный менджер:
-```python
-async with wrap_smart_logger(
-    log_source="Request to Server",
-    context_func=lambda: str(kwargs),
-    debug=False
-):
-    response = await make_request(**kwargs)
+```python #logger_common_use
+async def handler() -> None:
+    async with wrap_smart_logger(
+        log_source="Request to Server",
+        context_func=lambda: str(kwargs),
+        debug=False,
+    ):
+        await make_request(**kwargs)
 ```
 
 4.  Также можно использовать smart_logger для логирования запросов к FastAPI приложению:
-```python
+```python #logger_fastapi_use
 app = FastAPI()
+
 
 @app.middleware("http")
 async def smart_logger_middleware(request: Request, call_next: Callable) -> None:
@@ -94,7 +92,7 @@ async def smart_logger_middleware(request: Request, call_next: Callable) -> None
 
 ## Пример команд для включения отладки
 
-```python
+```python #logger_debug_enable
 @collector.command("/_debug:enable-for-huids", visible=False)
 async def enable_debug_for_users(message: IncomingMessage, bot: Bot) -> None:
     try:
@@ -105,11 +103,11 @@ async def enable_debug_for_users(message: IncomingMessage, bot: Bot) -> None:
 
     # TODO: Обновите список user_huid
 
-    await bot.answer_message("Список user_huid для отладки обновлён")
+    await bot.answer_message(f"Список user_huid для отладки обновлён {huids}")
 ```
 
 
-```python
+```python #logger_debug_enable_command
 @collector.command("/_debug:enable-for-tasks", visible=False)
 async def enable_debug_for_tasks(message: IncomingMessage, bot: Bot) -> None:
     # TODO: Обновите список имён задач
@@ -122,10 +120,9 @@ async def enable_debug_for_tasks(message: IncomingMessage, bot: Bot) -> None:
 
 1. Проверка роли:
 
-```python
-from pybotx_smart_logger import smart_log
-
+```python #logger_check_role
 # TODO: Мидлварь для заполнения message.state.user
+
 
 async def subscribed_users_only_middleware(
     message: IncomingMessage,
@@ -133,7 +130,7 @@ async def subscribed_users_only_middleware(
     call_next: IncomingMessageHandlerFunc,
 ) -> None:
     if not message.state.user.is_subscribed:
-        await bot.send(only_subscribed_users_allowed_message(message))
+        await bot.send(message=only_subscribed_users_allowed_message(message))
 
         return
 
@@ -144,16 +141,13 @@ async def subscribed_users_only_middleware(
 
 2. Обращение в API:
 
-```python
-from pybotx_smart_logger import smart_log
-
+```python #logger_api_call
 async def _perform_request(
-    self,
     method: Literal["GET", "POST"],
     url: str,
     query_params: Optional[Dict[str, Any]] = None,
     body_dict: Optional[Dict[str, Any]] = None,
-) -> ResponseSchema:
+) -> str:
     smart_log("Performing request to YourAwesomeAPI")
     smart_log("Method:", method)
     smart_log("URL:", url)
@@ -161,19 +155,22 @@ async def _perform_request(
     smart_log("Body dict:", body_dict)
 
     try:
-        async with AsyncClient(base_url=self._base_url) as client:
+        async with AsyncClient(base_url=base_url) as client:
             response = await client.request(
-                method, url, params=query_params, json=body_dict
+                method,
+                url,
+                params=query_params,
+                json=body_dict,
             )
     except HTTPError as exc:
-        raise RequestToAwesomeAPIFailed from exc
+        raise RequestToAwesomeAPIError from exc
 
     smart_log("Response text:", response.text)
 
     try:
         response.raise_for_status()
     except HTTPStatusError as exc:  # noqa: WPS440
-        raise InvalidStatusCodeFromAwesomeAPI from exc
+        raise InvalidStatusCodeFromAwesomeAPIError from exc
 
     return response.text
 ```
