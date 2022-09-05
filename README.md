@@ -19,7 +19,7 @@ _Shows logs when you need it_
 
 ## Использование
 
-Используя функцию `smart_log(log_message: str, log_item: Any = undefined)` логируете всю
+Используя функцию `smart_log(log_message: str, *args: Any, **kwargs: Any)` логируете всю
 информацию, которая поможет в диагностике ошибки. Если во время обработки сообщения
 будет выброшено исключение, в логи попадёт:
 
@@ -29,45 +29,6 @@ _Shows logs when you need it_
 
 Если обработка сообщения завершится успешно, накопленные логи будут "выброшены".
 
-В ботах часто используются фоновые задачи, исключения которых не могут быть перехвачены
-хендлером. Для них используется `smart_logger_decorator`, позволяющий получить
-аналогичное для обработки сообщений поведение.
-
-Вы так же можете подлючить миддлварь для возможности логирования из FastAPI хендлеров. В таком случае, если во время обработки исключения будет выброшено ислючение, в логи попадет:
-
-1. Метод
-2. Урл запроса с query параметрами
-3. Заголовки запроса
-
-При необходимости, тело запроса нужно логировать в самом хендлере:
-``` python
-`smart_log(await request.json())`
-```
-
-
-## Режим отладки
-
-Появление необходимых логов при возникновении ошибки очень удобно. Однако есть
-ситуации, когда необходимо понаблюдать за нормальной работой кода. Тем более, что вызовы
-`smart_log` уже расставлены. Поэтому для сообщений и фоновых задач предусмотрены функции
-отладки.
-
-`BotXSmartLoggerMiddleware` принимает пользовательскую функцию
-`debug_enabled_for_message(message: Message) -> bool`, позволяющую включить режим отладки в
-зависимости от входящего сообщения.
-
-`make_smart_logger_decorator` принимает пользовательскую функцию
-`debug_enabled_for_task(task_name: str) -> bool` позволяющую включить режим отладки в
-зависимости от имени функции. `smart_logger_decorator` знает имя функции, которую он
-оборачивает и передаёт его в `debug_enabled_for_task` в качестве аргумента.
-
-Эти функции можно использовать для включения отладки через переменные окружения, стейт
-бота, Redis, PostgreSQL и т.д. Рекомендую завести команды, которые позволят включать
-режим отладки отправкой сообщения (см. пример ниже).
-
-`FastApiSmartLoggerMiddleware` принимает аргумент `debug_enabled: bool`.
-
-
 ## Настройка
 
 1. Устанавливаем библиотеку:  
@@ -75,74 +36,63 @@ _Shows logs when you need it_
 poetry add pybotx-smart-logger
 ```
 
-2. Подключаем мидлварь и хендлер исключений к боту. Хендлер должен быть подключен к
-   типу Exception, т.е. заменяет подключенный в коробке `internal_error_handler`.
+2. Подключим мидлварь для логирования входящих сообщений:
 
-```python
-from pybotx import Bot
-from pybotx_smart_logger import make_smart_logger_exception_handler, BotXSmartLoggerMiddleware
+**middlewares/smart_logger.py**
+```python #logger_init_middleware
+async def smart_logger_middleware(
+    message: IncomingMessage,
+    bot: Bot,
+    call_next: IncomingMessageHandlerFunc,
+) -> None:
+    async with wrap_smart_logger(
+        log_source="Incoming message",
+        context_func=lambda: format_raw_command(message.raw_command),
+        debug=True,
+    ):
+        await call_next(message, bot)
+```
 
-from app.resources import strings
-
-smart_logger_exception_handler = make_smart_logger_exception_handler(
-    strings.BOT_INTERNAL_ERROR_TEXT
+**bot.py**
+```python #logger_init_bot
+Bot(
+    collectors=[collector],
+    bot_accounts=[BOT_CREDENTIALS],
+    middlewares=[
+        smart_logger_middleware,
+    ],
 )
-
-bot = Bot(
-    collectors=...,
-    bot_accounts=...,
-    exception_handlers={Exception: smart_logger_exception_handler},
-    middlewares=[BotXSmartLoggerMiddleware, debug_enabled_for_message=False]
-)
+```
+3. Для того чтобы логировать какие-то другие части приложения, необходимо обернуть в контекстный менджер:
+```python #logger_common_use
+async def handler() -> None:
+    async with wrap_smart_logger(
+        log_source="Request to Server",
+        context_func=lambda: str(kwargs),
+        debug=False,
+    ):
+        await make_request(**kwargs)
 ```
 
-3. [Опционально] Для фоновых задач создаём декоратор и запускаем фоновые задачи в при
-   старте бота:
-
-```python
-import asyncio
-from pybotx_smart_logger import make_smart_logger_decorator
-
-smart_logger_decorator = make_smart_logger_decorator(lambda task_name: False)
+4.  Также можно использовать smart_logger для логирования запросов к FastAPI приложению:
+```python #logger_fastapi_use
+app = FastAPI()
 
 
-@smart_logger_decorator
-async def update_users_tasks() -> None:
-    pass
-
-
-async def update_background_task() -> None:
-    while True:
-        await update_users_tasks()
-        await asyncio.sleep(60)
-
-# Внутри функции бота `start_app`:
-asyncio.create_task(update_background_task())
+@app.middleware("http")
+async def smart_logger_middleware(request: Request, call_next: Callable) -> None:
+    async with wrap_smart_logger(
+        log_source="Incoming request",
+        context_func=lambda: pformat_str_request(request),
+        debug=DEBUG,
+    ):
+        return await call_next(request)
 ```
-
-4. [Опционально] Возможность логирования из FastAPI хендлера:
-В файле `app/main.py`
-4.1 Подлключаем миддлварь:
-``` python
-from pybotx_smart_logger import FastApiSmartLoggerMiddleware
-...
-def get_application() -> FastAPI:
-    ...
-    application.middleware("http")(FastApiSmartLoggerMiddleware(debug_enabled=False))
-```
-4.2 Подключаем хендлер исключений:
-``` python
-from pybotx_smart_logger import FastApiSmartLoggerMiddleware, fastapi_exception_handler
-...
-def get_application() -> FastAPI:
-    ...
-    application.middleware("http")(FastApiSmartLoggerMiddleware(debug_enabled=False))
-    application.add_exception_handler(Exception, fastapi_exception_handler)
-```
+`log_source` определяет источник логов. `context_func` - пользовательская функция для форматирования логов.
 
 ## Пример команд для включения отладки
 
-```python
+```python #logger_debug_enable
 @collector.command("/_debug:enable-for-huids", visible=False)
 async def enable_debug_for_users(message: IncomingMessage, bot: Bot) -> None:
     try:
@@ -153,11 +103,11 @@ async def enable_debug_for_users(message: IncomingMessage, bot: Bot) -> None:
 
     # TODO: Обновите список user_huid
 
-    await bot.answer_message("Список user_huid для отладки обновлён")
+    await bot.answer_message(f"Список user_huid для отладки обновлён {huids}")
 ```
 
 
-```python
+```python #logger_debug_enable_command
 @collector.command("/_debug:enable-for-tasks", visible=False)
 async def enable_debug_for_tasks(message: IncomingMessage, bot: Bot) -> None:
     # TODO: Обновите список имён задач
@@ -170,10 +120,9 @@ async def enable_debug_for_tasks(message: IncomingMessage, bot: Bot) -> None:
 
 1. Проверка роли:
 
-```python
-from pybotx_smart_logger import smart_log
-
+```python #logger_check_role
 # TODO: Мидлварь для заполнения message.state.user
+
 
 async def subscribed_users_only_middleware(
     message: IncomingMessage,
@@ -181,7 +130,7 @@ async def subscribed_users_only_middleware(
     call_next: IncomingMessageHandlerFunc,
 ) -> None:
     if not message.state.user.is_subscribed:
-        await bot.send(only_subscribed_users_allowed_message(message))
+        await bot.send(message=only_subscribed_users_allowed_message(message))
 
         return
 
@@ -192,16 +141,13 @@ async def subscribed_users_only_middleware(
 
 2. Обращение в API:
 
-```python
-from pybotx_smart_logger import smart_log
-
+```python #logger_api_call
 async def _perform_request(
-    self,
     method: Literal["GET", "POST"],
     url: str,
     query_params: Optional[Dict[str, Any]] = None,
     body_dict: Optional[Dict[str, Any]] = None,
-) -> ResponseSchema:
+) -> str:
     smart_log("Performing request to YourAwesomeAPI")
     smart_log("Method:", method)
     smart_log("URL:", url)
@@ -209,19 +155,22 @@ async def _perform_request(
     smart_log("Body dict:", body_dict)
 
     try:
-        async with AsyncClient(base_url=self._base_url) as client:
+        async with AsyncClient(base_url=base_url) as client:
             response = await client.request(
-                method, url, params=query_params, json=body_dict
+                method,
+                url,
+                params=query_params,
+                json=body_dict,
             )
     except HTTPError as exc:
-        raise RequestToAwesomeAPIFailed from exc
+        raise RequestToAwesomeAPIError from exc
 
     smart_log("Response text:", response.text)
 
     try:
         response.raise_for_status()
     except HTTPStatusError as exc:  # noqa: WPS440
-        raise InvalidStatusCodeFromAwesomeAPI from exc
+        raise InvalidStatusCodeFromAwesomeAPIError from exc
 
     return response.text
 ```
