@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybotx-smart-logger"
-version = "0.9.5"
+version = "0.9.6"
 description = "Shows logs when you need it"
 authors = ["Alexander Samoylenko <alexandr.samojlenko@ccsteam.ru>"]
 readme = "README.md"
@@ -8,7 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.8, <3.11"
 
-pybotx = ">=0.44.1,<0.50.0"
+pybotx = ">=0.44.1,<0.52.0"
 
 fastapi = ">=0.70.0,<0.75.0"
 
