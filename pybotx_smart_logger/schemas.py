@@ -3,6 +3,8 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
 
+from loguru._datetime import datetime  # noqa: WPS436
+
 
 @dataclass
 class LogEntry:
@@ -12,6 +14,7 @@ class LogEntry:
     module: str
     function: str
     line_number: int
+    time: datetime
 
 
 AccumulatedLogs = List[LogEntry]
