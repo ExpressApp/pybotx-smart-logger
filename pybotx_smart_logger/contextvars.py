@@ -33,3 +33,14 @@ def get_debug_enabled() -> bool:
 
 def set_debug_enabled(new_value: bool) -> None:
     _debug_enabled_var.set(new_value)
+
+
+_grouping_enabled_var: ContextVar[bool] = ContextVar("grouping_enabled", default=False)
+
+
+def get_grouping_enabled() -> bool:
+    return _grouping_enabled_var.get()
+
+
+def set_grouping_enabled(new_value: bool) -> None:
+    _grouping_enabled_var.set(new_value)

@@ -4,12 +4,14 @@ import inspect
 from typing import Any
 
 from loguru import logger
+from loguru._datetime import datetime  # noqa: WPS436
 
 from pybotx_smart_logger import log_levels
 from pybotx_smart_logger.contextvars import (
     clear_accumulated_logs,
     get_accumulated_logs,
     get_debug_enabled,
+    get_grouping_enabled,
 )
 from pybotx_smart_logger.schemas import LogEntry
 
@@ -21,6 +23,7 @@ def flush_log_entry(log_entry: LogEntry, log_level: str) -> None:
                 "name": log_entry.module,
                 "line": log_entry.line_number,
                 "function": log_entry.function,
+                "time": log_entry.time,
             },
         ),
     )
@@ -49,10 +52,15 @@ def smart_log(log_message: str, *args: Any, **kwargs: Any) -> None:
         module=caller_frame.frame.f_globals["__name__"],
         function=caller_frame.function,
         line_number=caller_frame.lineno,
+        time=datetime.now(),
     )
 
     if get_debug_enabled():
-        flush_log_entry(log_entry, log_levels.INFO)
+        if get_grouping_enabled():
+            accumulated_logs = get_accumulated_logs()
+            accumulated_logs.append(log_entry)
+        else:
+            flush_log_entry(log_entry, log_levels.INFO)
     else:
         accumulated_logs = get_accumulated_logs()
         accumulated_logs.append(log_entry)

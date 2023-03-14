@@ -4,8 +4,12 @@ from typing import AsyncGenerator, Callable
 from loguru import logger
 
 from pybotx_smart_logger import log_levels
-from pybotx_smart_logger.contextvars import get_debug_enabled, set_debug_enabled
-from pybotx_smart_logger.logger import flush_accumulated_logs
+from pybotx_smart_logger.contextvars import (
+    get_grouping_enabled,
+    set_debug_enabled,
+    set_grouping_enabled,
+)
+from pybotx_smart_logger.logger import flush_accumulated_logs, smart_log
 
 
 @asynccontextmanager
@@ -13,22 +17,21 @@ async def wrap_smart_logger(
     log_source: str,
     context_func: Callable[[], str],
     debug: bool = False,
+    group: bool = False,
 ) -> AsyncGenerator[None, None]:
     set_debug_enabled(debug)
+    set_grouping_enabled(group)
 
-    if get_debug_enabled():
-        context = context_func()
-        logger.info("Processing `{}`:\n{}", log_source, context)
+    smart_log(f"Processing `{log_source}`:\n{context_func()}")
 
     try:
         yield
     except Exception as exc:
-        if not get_debug_enabled():
-            context = context_func()
-            logger.error("Error while processing `{}`:\n{}", log_source, context)
-
         flush_accumulated_logs(log_levels.ERROR)
-
         logger.exception("")
 
         raise exc from None
+
+    else:
+        if get_grouping_enabled():
+            flush_accumulated_logs(log_levels.INFO)

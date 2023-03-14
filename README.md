@@ -63,7 +63,7 @@ Bot(
     ],
 )
 ```
-3. Для того чтобы логировать какие-то другие части приложения, необходимо обернуть в контекстный менджер:
+3. Для того чтобы логировать какие-то другие части приложения, необходимо обернуть в контекстный менеджер:
 ```python #logger_common_use
 async def handler() -> None:
     async with wrap_smart_logger(
@@ -115,6 +115,30 @@ async def enable_debug_for_tasks(message: IncomingMessage, bot: Bot) -> None:
     await bot.answer_message("Список задач для отладки обновлён")
 ```
 
+## Группировка сообщений логера
+Для того, чтобы логи из разных хендлеров не перемешивались между собой 
+и можно было удобно отследить весь порядок действия пользователя, можно 
+включить группировку логов.
+
+```python #logger_group
+async def smart_logger_middleware(
+    message: IncomingMessage,
+    bot: Bot,
+    call_next: IncomingMessageHandlerFunc,
+) -> None:
+    async with wrap_smart_logger(
+        log_source="Incoming message",
+        context_func=lambda: format_raw_command(message.raw_command),
+        debug=True,
+        group=True,  # Enable grouping
+    ):
+        await call_next(message, bot)
+```
+
+Теперь всё, что было залогировано через функцию `smart_log` будет "выброшено" только
+после обработки сообщения и не будет перемешано с логами других сообщений.
+
+**Работает только с включенным `DEBUG`**
 
 ## Где применять
 
