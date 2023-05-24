@@ -70,6 +70,7 @@ def incoming_message_factory(
             metadata={},
             sender=UserSender(
                 huid=user_huid,
+                udid=None,
                 ad_login=ad_login,
                 ad_domain=ad_domain,
                 username=None,
