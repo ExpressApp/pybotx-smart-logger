@@ -14,7 +14,7 @@ pydantic = "^1.10.5"
 [tool.poetry.dev-dependencies]
 add-trailing-comma = "2.2.3"
 autoflake = "1.4.0"
-black = "22.3.0"
+black = "22.12.0"
 isort = "5.10.1"
 mypy = "0.910.0"
 wemake-python-styleguide = "0.16.1"
