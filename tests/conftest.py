@@ -39,7 +39,7 @@ def host() -> str:
 def bot_account(host: str, bot_id: UUID) -> BotAccountWithSecret:
     return BotAccountWithSecret(
         id=bot_id,
-        host=host,
+        cts_url=f"https://{host}",
         secret_key="bee001",
     )
 
