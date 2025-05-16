@@ -20,7 +20,7 @@ async def smart_logger_middleware(
 collector = HandlerCollector()
 BOT_CREDENTIALS = BotAccountWithSecret(  # noqa: S106
     secret_key="",
-    host="",
+    cts_url="",
     id=uuid4(),
 )
 
