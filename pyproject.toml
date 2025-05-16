@@ -9,7 +9,7 @@ readme = "README.md"
 python = ">=3.9, <3.14"
 
 loguru = "^0.6.0"
-pydantic = "^1.10.5"
+pydantic = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 add-trailing-comma = "3.1.0"
