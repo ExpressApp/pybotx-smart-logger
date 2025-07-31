@@ -1051,14 +1051,14 @@ testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pybotx"
-version = "0.75.0"
+version = "0.75.2"
 description = "A python library for interacting with eXpress BotX API"
 optional = false
 python-versions = "<3.14,>=3.9"
 groups = ["dev"]
 files = [
-    {file = "pybotx-0.75.0-py3-none-any.whl", hash = "sha256:bfc9f5b2804093ce97139700f3d69de083be82058157e0ec8e17a57401cef0a8"},
-    {file = "pybotx-0.75.0.tar.gz", hash = "sha256:1da77b137fc5480753af0ae4efd47ea40a1f18d8bcc27f6dcf67bced5ebd5dcd"},
+    {file = "pybotx-0.75.2-py3-none-any.whl", hash = "sha256:1f1ac8596745ec1fff3ab4e8fcec7551f009f1a8913e0a84541294af686abff4"},
+    {file = "pybotx-0.75.2.tar.gz", hash = "sha256:37f7c61c8917bb143b8df411078c294e178088c91a02d2927732025c879d18b0"},
 ]
 
 [package.dependencies]
