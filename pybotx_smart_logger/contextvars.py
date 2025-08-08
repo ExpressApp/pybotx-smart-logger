@@ -1,10 +1,11 @@
 """Contextvars for smart_logger."""
 
 from contextvars import ContextVar
+from typing import Optional
 
 from pybotx_smart_logger.schemas import AccumulatedLogs
 
-_accumulated_logs_var: ContextVar[AccumulatedLogs | None] = ContextVar(
+_accumulated_logs_var: ContextVar[Optional[AccumulatedLogs]] = ContextVar(
     "accumulated_logs",
     default=None,
 )
