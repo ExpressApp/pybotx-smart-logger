@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pybotx-smart-logger"
-version = "0.11.0"
+version = "0.12.0a1"
 description = "Shows logs when you need it"
 authors = ["Alexander Samoylenko <alexandr.samojlenko@ccsteam.ru>"]
 readme = "README.md"
@@ -8,8 +8,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.9, <3.14"
 
-loguru = "^0.6.0"
-pydantic = "^1.10.5"
+loguru = ">=0.6.0,<0.7.0"
 
 [tool.poetry.dev-dependencies]
 add-trailing-comma = "3.1.0"
@@ -26,7 +25,7 @@ pytest-cov = "^6.1.1"
 requests = "^2.32.3"
 
 fastapi = ">=0.70.0,<0.116.0"
-pybotx = ">=0.75.0,<1.0.0"
+pybotx = "0.76.0a1"
 
 [build-system]
 requires = ["poetry>=1.2.0"]
