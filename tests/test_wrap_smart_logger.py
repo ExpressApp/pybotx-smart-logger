@@ -1,6 +1,6 @@
 import asyncio
 from pprint import pformat
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 from unittest.mock import AsyncMock
 
 import pytest
@@ -27,7 +27,7 @@ async def test__wrap_smart_logger__debug_off__no_error(
     trigger = AsyncMock()
     collector = HandlerCollector()
 
-    def format_raw_command(raw_command: Optional[Dict[str, Any]]) -> str:
+    def format_raw_command(raw_command: Optional[dict[str, Any]]) -> str:
         if raw_command is None:
             logger.warning("Empty `raw_command`")
             return ""
@@ -80,7 +80,7 @@ async def test__wrap_smart_logger__debug_on__no_error(
     # - Arrange -
     collector = HandlerCollector()
 
-    def format_raw_command(raw_command: Optional[Dict[str, Any]]) -> str:
+    def format_raw_command(raw_command: Optional[dict[str, Any]]) -> str:
         if raw_command is None:
             logger.warning("Empty `raw_command`")
             return ""
@@ -131,7 +131,7 @@ async def test__wrap_smart_logger__debug_off__error_occured(
     # - Arrange -
     collector = HandlerCollector()
 
-    def format_raw_command(raw_command: Optional[Dict[str, Any]]) -> str:
+    def format_raw_command(raw_command: Optional[dict[str, Any]]) -> str:
         if raw_command is None:
             logger.warning("Empty `raw_command`")
             return ""
@@ -185,7 +185,7 @@ async def test__wrap_smart_logger__debug_on__error_occured(
     # - Arrange -
     collector = HandlerCollector()
 
-    def format_raw_command(raw_command: Optional[Dict[str, Any]]) -> str:
+    def format_raw_command(raw_command: Optional[dict[str, Any]]) -> str:
         if raw_command is None:
             logger.warning("Empty `raw_command`")
             return ""
@@ -239,7 +239,7 @@ async def test__wrap_smart_logger__group_on__no_error(
     # - Arrange -
     collector = HandlerCollector()
 
-    def format_raw_command(raw_command: Optional[Dict[str, Any]]) -> str:
+    def format_raw_command(raw_command: Optional[dict[str, Any]]) -> str:
         if raw_command is None:
             logger.warning("Empty `raw_command`")
             return ""

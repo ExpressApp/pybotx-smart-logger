@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Callable, Dict, Generator, Optional
+from typing import Any, Callable, Generator, Optional
 from uuid import UUID, uuid4
 
 import pytest
@@ -54,7 +54,7 @@ def incoming_message_factory(
     def factory(
         *,
         body: str = "",
-        raw_command: Optional[Dict[str, Any]] = None,
+        raw_command: Optional[dict[str, Any]] = None,
         ad_login: Optional[str] = None,
         ad_domain: Optional[str] = None,
     ) -> IncomingMessage:
