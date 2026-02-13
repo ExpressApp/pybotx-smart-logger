@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Callable, Generator, Optional
+from collections.abc import Callable, Generator
+from typing import Any
 from uuid import UUID, uuid4
 
 import pytest
@@ -12,6 +13,12 @@ from pybotx import (
     IncomingMessage,
     UserDevice,
     UserSender,
+)
+
+from pybotx_smart_logger.contextvars import (
+    clear_accumulated_logs,
+    set_debug_enabled,
+    set_grouping_enabled,
 )
 
 
@@ -35,6 +42,17 @@ def host() -> str:
     return "cts.example.com"
 
 
+@pytest.fixture(autouse=True)
+def reset_smart_logger_context() -> Generator[None, None, None]:
+    clear_accumulated_logs()
+    set_debug_enabled(False)
+    set_grouping_enabled(False)
+    yield
+    clear_accumulated_logs()
+    set_debug_enabled(False)
+    set_grouping_enabled(False)
+
+
 @pytest.fixture
 def bot_account(host: str, bot_id: UUID) -> BotAccountWithSecret:
     return BotAccountWithSecret(
@@ -54,9 +72,9 @@ def incoming_message_factory(
     def factory(
         *,
         body: str = "",
-        raw_command: Optional[dict[str, Any]] = None,
-        ad_login: Optional[str] = None,
-        ad_domain: Optional[str] = None,
+        raw_command: dict[str, Any] | None = None,
+        ad_login: str | None = None,
+        ad_domain: str | None = None,
     ) -> IncomingMessage:
         return IncomingMessage(
             bot=BotAccount(
@@ -105,7 +123,7 @@ def loguru_caplog(
 ) -> Generator[pytest.LogCaptureFixture, None, None]:
     # https://github.com/Delgan/loguru/issues/59
 
-    class PropogateHandler(logging.Handler):  # noqa: WPS431
+    class PropogateHandler(logging.Handler):
         def emit(self, record: logging.LogRecord) -> None:
             logging.getLogger(record.name).handle(record)
 

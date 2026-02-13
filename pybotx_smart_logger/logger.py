@@ -1,10 +1,10 @@
 """Prints logs only if exception was raised while processing message."""
 
 import inspect
+from datetime import datetime
 from typing import Any
 
 from loguru import logger
-from loguru._datetime import datetime  # noqa: WPS436
 
 from pybotx_smart_logger import log_levels
 from pybotx_smart_logger.contextvars import (
