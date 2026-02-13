@@ -6,26 +6,69 @@ authors = ["Alexander Samoylenko <alexandr.samojlenko@ccsteam.ru>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.9, <3.14"
+python = ">=3.10, <3.14"
 
-loguru = ">=0.6.0,<0.7.0"
+loguru = ">=0.7.3,<0.8.0"
 
-[tool.poetry.dev-dependencies]
-add-trailing-comma = "3.1.0"
-autoflake = "2.3.1"
-black = "25.1.0"
-isort = "6.0.1"
-mypy = "1.15.0"
-wemake-python-styleguide = "0.19.2"
-bandit = "1.8.3"
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.19.1"
+bandit = "^1.9.3"
 
-pytest = "^8.3.5"
-pytest-asyncio = "^0.26.0"
-pytest-cov = "^6.1.1"
-requests = "^2.32.3"
+pytest = "^9.0.2"
+pytest-asyncio = "^1.3.0"
+pytest-cov = "^7.0.0"
+pytest-xdist = "^3.8.0"
+pytest-mock = "^3.15.1"
+freezegun = "^1.5.5"
+factory-boy = "^3.3.3"
+faker = "^40.4.0"
+requests = "^2.32.5"
+ruff = "^0.15.1"
 
-fastapi = ">=0.70.0,<0.116.0"
-pybotx = ">=0.75.0,<1.0.0"
+fastapi = "^0.129.0"
+pybotx = ">=0.76.0,<1.0.0"
+pybotx-smartapp-rpc = "^0.13.0"
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "F",
+  "I",
+  "B",
+  "UP",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = """
+  --strict-markers
+  --tb=short
+  --cov=pybotx_smart_logger
+  --cov-report=term-missing
+  --cov-branch
+  --no-cov-on-fail
+  --cov-fail-under=100
+"""
+
+[tool.mypy]
+plugins = ["pydantic.mypy"]
+disallow_untyped_defs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["pytest.*"]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["poetry>=1.2.0"]

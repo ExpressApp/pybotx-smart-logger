@@ -1,9 +1,8 @@
 """Schemas for smart logger internals."""
 
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
-
-from loguru._datetime import datetime  # noqa: WPS436
 
 
 @dataclass

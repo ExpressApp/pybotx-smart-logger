@@ -2,6 +2,10 @@
 
 _Shows logs when you need it_
 
+## Requirements
+
+- Python 3.10+
+
 
 ## Проблема/решение
 
