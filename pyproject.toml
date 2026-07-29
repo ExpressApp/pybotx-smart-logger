@@ -25,7 +25,7 @@ faker = "^40.4.0"
 requests = "^2.32.5"
 ruff = "^0.15.1"
 
-fastapi = "^0.129.0"
+fastapi = "^0.141.0"
 pybotx = ">=0.76.0,<0.80.0"
 pybotx-smartapp-rpc = "^0.13.0"
 
