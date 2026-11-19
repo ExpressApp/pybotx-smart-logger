@@ -930,18 +930,18 @@ pyjwt = ">=2.11.0,<3.0.0"
 
 [[package]]
 name = "pybotx-smartapp-rpc"
-version = "0.13.0"
+version = "0.13.1"
 description = "eXpress SmartApp JSON-RPC library"
 optional = false
 python-versions = "<3.15,>=3.10"
 groups = ["dev"]
 files = [
-    {file = "pybotx_smartapp_rpc-0.13.0-py3-none-any.whl", hash = "sha256:42fa42d2e77ff982d8111d7f3c0b5f6bc015d95cc841e209120096bb5ccfc125"},
-    {file = "pybotx_smartapp_rpc-0.13.0.tar.gz", hash = "sha256:c67a3cf294114b33a733414d1492366a0f14158598e1e25c2a7f293391feee4e"},
+    {file = "pybotx_smartapp_rpc-0.13.1-py3-none-any.whl", hash = "sha256:e6d417f45638cf55a10e9a33d59c6abcfab731b7ec9678272004f98a9431211a"},
+    {file = "pybotx_smartapp_rpc-0.13.1.tar.gz", hash = "sha256:d594f398607a310e1f165c3f7e3ea4c2a2d644e08a1e5066d4a240cb1dcc8d1b"},
 ]
 
 [package.dependencies]
-pybotx = ">=0.76.0,<0.77.0"
+pybotx = ">=0.76.0,<0.80.0"
 pydantic = ">=2.12.5,<3.0.0"
 
 [[package]]
